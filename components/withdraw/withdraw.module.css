@@ -1,0 +1,35 @@
+.page {
+  min-height: 100vh;
+  padding: 32px 16px;
+  background: linear-gradient(180deg, #f5f8ff 0%, #eef6f5 100%);
+}
+
+.container {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.card {
+  box-shadow: 0 12px 30px rgba(9, 30, 66, 0.08);
+}
+
+.header {
+  margin-bottom: 18px;
+}
+
+.subtitle {
+  color: #5b6472;
+  margin-top: 8px;
+}
+
+.alert {
+  margin-bottom: 16px;
+}
+
+.retry {
+  margin-top: 12px;
+}
+
+.result {
+  margin-top: 20px;
+}

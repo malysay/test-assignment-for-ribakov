@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Тестовое задание: вывод средств (Next.js + TypeScript)
 
-## Getting Started
+Реализация задания из `frontend-test-assignment.md`.
 
-First, run the development server:
+## Стек
+
+- Next.js 14 (App Router)
+- TypeScript
+- Ant Design
+- Zustand
+- Vitest + Testing Library
+- Bun (пакетный менеджер и раннер)
+
+## Запуск
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Тесты
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+bun run test
+```
 
-## Learn More
+## Что реализовано
 
-To learn more about Next.js, take a look at the following resources:
+- Форма вывода с полями:
+  - `amount` (`> 0`)
+  - `destination`
+  - `confirm` (чекбокс)
+- Кнопка отправки активна только при валидной форме.
+- Во время запроса отправка заблокирована.
+- Интеграция с API:
+  - `POST /v1/withdrawals`
+  - `GET /v1/withdrawals/{id}`
+- Генерация и отправка `idempotency_key`.
+- Обработка `409` с понятным сообщением.
+- Retry при сетевой ошибке без потери введённых данных.
+- После успеха показывается созданная заявка и её статус.
+- Состояния в UI/сторе:
+  - `idle`
+  - `loading`
+  - `success`
+  - `error`
+- Защита от двойного submit:
+  - блокировка кнопки на уровне UI
+  - дополнительный guard в Zustand-сторе
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Mock API
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Локальные route handlers:
 
-## Deploy on Vercel
+- `app/v1/withdrawals/route.ts`
+- `app/v1/withdrawals/[id]/route.ts`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Логика идемпотентности:
+- Одинаковый ключ + одинаковый payload возвращают существующую заявку.
+- Одинаковый ключ + другой payload возвращают `409`.
+- Повторная отправка новой заявки на тот же `destination` возвращает `409` (чтобы сценарий конфликта был воспроизводим в UI).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Безопасность
+
+- Небезопасный HTML-рендер (`dangerouslySetInnerHTML`) не используется.
+- Access token не хранится в `localStorage`.
+- Прод-подход для токенов: короткоживущий access token в памяти, refresh token в `HttpOnly`, `Secure`, `SameSite` cookie.
+
+## Покрытие тестами (минимум из задания)
+
+- happy-path submit: `tests/withdraw-page.test.tsx`
+- ошибка API: `tests/withdraw-page.test.tsx`
+- защита от двойного submit: `tests/withdraw-page.test.tsx`
+
+## Деплой
+
+Публичный деплой из sandbox-среды не выполнялся.
+
+Как опубликовать:
+1. Запушить репозиторий в GitHub.
+2. Импортировать проект в Vercel.
+3. Добавить публичную ссылку в этот README.
