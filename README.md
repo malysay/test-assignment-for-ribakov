@@ -76,9 +76,4 @@ bun run test
 
 ## Деплой
 
-Публичный деплой из sandbox-среды не выполнялся.
-
-Как опубликовать:
-1. Запушить репозиторий в GitHub.
-2. Импортировать проект в Vercel.
-3. Добавить публичную ссылку в этот README.
+https://test-assignment-for-ribakov.vercel.app/
